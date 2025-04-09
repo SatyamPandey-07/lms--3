@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lottiefiles/react-lottie-player": "^3.6.0",
     "@reduxjs/toolkit": "^2.6.1",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/vite": "^4.0.17",
     "axios": "^1.8.4",
     "framer-motion": "^12.6.3",
@@ -21,7 +23,10 @@
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.4.1",
+    "react-scroll-parallax": "^3.4.5",
     "react-toastify": "^11.0.5",
+    "react-typewriter-effect": "^1.1.0",
+    "recharts": "^2.15.2",
     "tailwindcss": "^4.0.17"
   },
   "devDependencies": {

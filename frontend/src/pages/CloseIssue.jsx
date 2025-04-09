@@ -8,11 +8,12 @@ const CloseIssue = () => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchCollectedIssues = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("http://localhost:4300/api/v1/users/rentals/collected"); // You should create this route in backend
+      const { data } = await axios.get("http://localhost:4300/api/v1/users/rentals/collected");
       setIssues(data);
     } catch (error) {
       console.error("Error fetching collected issues:", error);
@@ -21,18 +22,16 @@ const CloseIssue = () => {
     }
   };
 
-const closeIssue = async () => {
-  try {
-    if (!selectedIssue) return;
-
-    await axios.put(`http://localhost:4300/api/v1/users/rentals/close/${selectedIssue._id}`);
-    setSelectedIssue(null);
-    fetchCollectedIssues(); 
-  } catch (error) {
-    console.error("Error in closing issue:", error);
-  }
-};
-
+  const closeIssue = async () => {
+    try {
+      if (!selectedIssue) return;
+      await axios.put(`http://localhost:4300/api/v1/users/rentals/close/${selectedIssue._id}`);
+      setSelectedIssue(null);
+      fetchCollectedIssues();
+    } catch (error) {
+      console.error("Error in closing issue:", error);
+    }
+  };
 
   useEffect(() => {
     fetchCollectedIssues();
@@ -47,56 +46,84 @@ const closeIssue = async () => {
     return { days: diffDays, hours: diffHours };
   };
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value.toLowerCase());
+  };
+
+  const filteredIssues = issues.filter(
+    (issue) =>
+      issue.user?.fullname.toLowerCase().includes(searchTerm) ||
+      issue.book?.title.toLowerCase().includes(searchTerm)
+  );
+
   return (
-    <div className="min-h-screen bg-[#f7efe5] p-6">
-      <h1 className="text-2xl font-bold text-center mb-8 text-[#4a3628]">📦 Ongoing Issues</h1>
+    <div
+      className="min-h-screen p-6 font-['Oxygen'] text-white bg-gradient-to-tr from-[#0d1117] to-[#161b22]"
+    >
+      <h1 className="text-3xl font-bold text-center mb-6 text-[#58a6ff]">
+        📦 Close Book Issues
+      </h1>
+
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={handleSearch}
+        placeholder="🔍 Search by user or book..."
+        className="w-full md:w-1/2 mx-auto block mb-8 px-4 py-2 bg-[#161b22] border border-[#30363d] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#58a6ff]"
+      />
 
       {loading ? (
-        <p className="text-center text-gray-500">Loading issues...</p>
-      ) : issues.length === 0 ? (
-        <p className="text-center text-gray-500">No ongoing issues.</p>
+        <p className="text-center text-gray-400">Loading issues...</p>
+      ) : filteredIssues.length === 0 ? (
+        <p className="text-center text-gray-400">No ongoing issues found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {issues.map((issue) => (
-            <motion.div
-              key={issue._id}
-              className="bg-white shadow-xl rounded-xl p-5 border border-[#c2a27a]"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h2 className="text-lg font-semibold text-[#4a3628] mb-2">
-                📖 Book: <span className="font-bold">{issue.book?.title || "Unknown"}</span>
-              </h2>
-              <p className="text-gray-700 mb-1">👤 User: {issue.user?.fullname || "Unknown"}</p>
-              <p className="text-gray-600 mb-3">
-                Collected On:{" "}
-                <span className="font-medium">
-                  {new Date(issue.collectedDate).toLocaleDateString()}
-                </span>
-              </p>
+          <AnimatePresence>
+            {filteredIssues.map((issue) => {
+              const { days } = getTimeDiff(issue.collectedDate);
+              const isOverdue = days > 7;
 
-              <div className="flex gap-2 flex-wrap">
-                <button
-                  className="btn btn-sm btn-outline btn-info"
-                  onClick={() => setSelectedUser(issue.user)}
+              return (
+                <motion.div
+                  key={issue._id}
+                  className="bg-[#21262d] border border-[#30363d] rounded-lg p-5 shadow-md"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, type: "spring", stiffness: 120 }}
                 >
-                  View User
-                </button>
-                <button
-                  className="btn btn-sm btn-outline btn-warning"
-                  onClick={() => setSelectedBook(issue.book)}
-                >
-                  View Book
-                </button>
-                <button
-                  className="btn btn-sm btn-success"
-                  onClick={() => setSelectedIssue(issue)}
-                >
-                  Close Issue
-                </button>
-              </div>
-            </motion.div>
-          ))}
+                  <h2 className="text-xl font-semibold text-[#58a6ff] mb-2">
+                    📖 {issue.book?.title || "Unknown"}
+                  </h2>
+                  <p className="text-gray-300 mb-1">👤 {issue.user?.fullname || "Unknown"}</p>
+                  <p className="text-gray-400 mb-1">
+                    Collected On:{" "}
+                    <span className="font-medium">
+                      {new Date(issue.collectedDate).toLocaleDateString()}
+                    </span>
+                  </p>
+
+                  {isOverdue && (
+                    <p className="text-red-500 font-semibold mb-2">
+                      ⚠️ Overdue by {days - 7} days
+                    </p>
+                  )}
+
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    <button className="btn btn-sm bg-[#238636] hover:bg-[#2ea043] text-white" onClick={() => setSelectedUser(issue.user)}>
+                      View User
+                    </button>
+                    <button className="btn btn-sm bg-[#8957e5] hover:bg-[#a371f7] text-white" onClick={() => setSelectedBook(issue.book)}>
+                      View Book
+                    </button>
+                    <button className="btn btn-sm bg-[#da3633] hover:bg-[#f85149] text-white" onClick={() => setSelectedIssue(issue)}>
+                      Close Issue
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
         </div>
       )}
 
@@ -104,8 +131,8 @@ const closeIssue = async () => {
       <AnimatePresence>
         {selectedUser && (
           <motion.dialog className="modal modal-open" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="modal-box">
-              <h3 className="font-bold text-lg">👤 User Details</h3>
+            <div className="modal-box bg-[#161b22] border border-[#30363d] text-white">
+              <h3 className="font-bold text-lg text-[#58a6ff]">👤 User Details</h3>
               <p><strong>Name:</strong> {selectedUser.fullname} {selectedUser.surname}</p>
               <p><strong>Email:</strong> {selectedUser.email}</p>
               <img
@@ -114,7 +141,7 @@ const closeIssue = async () => {
                 className="mt-4 rounded shadow w-full max-w-xs mx-auto"
               />
               <div className="modal-action">
-                <button className="btn" onClick={() => setSelectedUser(null)}>Close</button>
+                <button className="btn bg-[#30363d] text-white" onClick={() => setSelectedUser(null)}>Close</button>
               </div>
             </div>
           </motion.dialog>
@@ -125,8 +152,8 @@ const closeIssue = async () => {
       <AnimatePresence>
         {selectedBook && (
           <motion.dialog className="modal modal-open" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="modal-box">
-              <h3 className="font-bold text-lg">📖 Book Details</h3>
+            <div className="modal-box bg-[#161b22] border border-[#30363d] text-white">
+              <h3 className="font-bold text-lg text-[#58a6ff]">📖 Book Details</h3>
               <p><strong>Title:</strong> {selectedBook.title}</p>
               <p><strong>Author:</strong> {selectedBook.author}</p>
               <p><strong>Description:</strong> {selectedBook.description}</p>
@@ -136,7 +163,7 @@ const closeIssue = async () => {
                 className="mt-4 rounded shadow w-full max-w-xs mx-auto"
               />
               <div className="modal-action">
-                <button className="btn" onClick={() => setSelectedBook(null)}>Close</button>
+                <button className="btn bg-[#30363d] text-white" onClick={() => setSelectedBook(null)}>Close</button>
               </div>
             </div>
           </motion.dialog>
@@ -147,20 +174,19 @@ const closeIssue = async () => {
       <AnimatePresence>
         {selectedIssue && (
           <motion.dialog className="modal modal-open" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="modal-box">
-              <h3 className="font-bold text-lg">🕒 Issue Duration</h3>
+            <div className="modal-box bg-[#161b22] border border-[#30363d] text-white">
+              <h3 className="font-bold text-lg text-[#58a6ff]">🕒 Issue Duration</h3>
               <p>
                 This issue has been active for{" "}
-                <span className="font-bold text-[#4a3628]">
+                <span className="font-bold text-[#f0f6fc]">
                   {getTimeDiff(selectedIssue.collectedDate).days} days and{" "}
                   {getTimeDiff(selectedIssue.collectedDate).hours} hours
-                </span>
-                .
+                </span>.
               </p>
               <div className="modal-action">
-              <button className="btn btn-success" onClick={closeIssue}>
-                Confirm Close Issue
-              </button>
+                <button className="btn bg-[#238636] text-white hover:bg-[#2ea043]" onClick={closeIssue}>
+                  Confirm Close Issue
+                </button>
               </div>
             </div>
           </motion.dialog>
