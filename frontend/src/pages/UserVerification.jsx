@@ -12,7 +12,9 @@ const UserVerification = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:4300/api/v1/users/fetch-notverified-users");
+        const response = await axios.get(
+          "http://localhost:4300/api/v1/users/fetch-notverified-users"
+        );
         setUsers(response.data.users);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -51,14 +53,14 @@ const UserVerification = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-[#f5ede3] to-[#d8c2a9]">
-      <h2 className="text-3xl font-bold mb-6 text-center text-[#4a3628]">
+    <div className="p-6 min-h-screen bg-[#0d1117] text-white">
+      <h2 className="text-3xl font-bold mb-6 text-center text-white">
         User Verification
       </h2>
 
-      <div className="overflow-x-auto shadow-xl rounded-xl">
-        <table className="min-w-full bg-white rounded-xl overflow-hidden">
-          <thead className="bg-[#e9d9c5] text-[#4a3628] font-semibold text-xs sm:text-sm">
+      <div className="overflow-x-auto shadow-lg rounded-xl">
+        <table className="min-w-full bg-[#161b22] rounded-xl overflow-hidden">
+          <thead className="bg-[#21262d] text-gray-300 font-semibold text-xs sm:text-sm">
             <tr>
               <th className="py-3 px-4 text-left">ID</th>
               <th className="py-3 px-4 text-left">Name</th>
@@ -70,7 +72,7 @@ const UserVerification = () => {
             {users.map((user) => (
               <tr
                 key={user._id}
-                className="hover:bg-[#fcf6f0] transition duration-200 text-xs sm:text-sm"
+                className="hover:bg-[#1f2937] transition duration-200 text-xs sm:text-sm border-b border-[#30363d]"
               >
                 <td className="py-3 px-4">{user._id.slice(-6)}</td>
                 <td className="py-3 px-4">{user.fullname} {user.surname}</td>
@@ -78,7 +80,7 @@ const UserVerification = () => {
                 <td className="py-3 px-4">
                   <button
                     onClick={() => setSelectedUser(user)}
-                    className="bg-[#6b4f37] text-white px-3 py-1 rounded hover:bg-[#4a3628] transition"
+                    className="bg-[#238636] text-white px-3 py-1 rounded hover:bg-[#2ea043] transition"
                   >
                     View Details
                   </button>
@@ -87,7 +89,7 @@ const UserVerification = () => {
             ))}
             {users.length === 0 && (
               <tr>
-                <td colSpan="4" className="text-center py-5 text-gray-500">
+                <td colSpan="4" className="text-center py-5 text-gray-400">
                   No users pending verification
                 </td>
               </tr>
@@ -103,50 +105,50 @@ const UserVerification = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm"
           >
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-white rounded-xl p-6 w-[95%] max-w-md shadow-xl relative"
+              className="bg-[#161b22] text-white rounded-xl p-6 w-[95%] max-w-md shadow-xl relative border border-[#30363d]"
             >
-              <h3 className="text-2xl font-bold mb-2 text-[#4a3628]">
+              <h3 className="text-2xl font-bold mb-2">
                 {selectedUser.fullname} {selectedUser.surname}
               </h3>
-              <p className="text-gray-700 mb-1">
+              <p className="text-gray-300 mb-1">
                 <strong>Email:</strong> {selectedUser.email}
               </p>
-              <p className="text-gray-700 mb-4">
+              <p className="text-gray-300 mb-4">
                 <strong>Receipt No:</strong> {selectedUser.feesReceiptNo}
               </p>
 
-              <div className="space-y-3 mb-4">
+              <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1 font-semibold">
+                  <p className="text-sm text-gray-400 mb-1 font-semibold">
                     Profile Image:
                   </p>
                   {selectedUser.profileImage ? (
                     <img
                       src={selectedUser.profileImage}
                       alt="Profile"
-                      className="w-full rounded-md border hover:scale-105 transition-transform duration-200"
+                      className="w-full rounded-md border border-[#30363d] hover:scale-105 transition-transform duration-200"
                       onError={(e) => (e.target.src = "/fallback-user.png")}
                     />
                   ) : (
-                    <div className="w-full h-40 flex items-center justify-center text-4xl font-bold text-white bg-[#4a3628] rounded-md">
+                    <div className="w-full h-40 flex items-center justify-center text-4xl font-bold bg-[#30363d] rounded-md">
                       {getInitials(selectedUser.fullname, selectedUser.surname)}
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-600 mb-1 font-semibold">
+                  <p className="text-sm text-gray-400 mb-1 font-semibold">
                     ID Card Image:
                   </p>
                   {selectedUser.idCardImage ? (
-                    <div className="max-h-52 overflow-auto border rounded-md">
+                    <div className="max-h-52 overflow-auto border border-[#30363d] rounded-md">
                       <img
                         src={selectedUser.idCardImage}
                         alt="ID Card"
@@ -155,7 +157,7 @@ const UserVerification = () => {
                       />
                     </div>
                   ) : (
-                    <div className="text-center text-sm text-gray-500 border p-4 rounded-md">
+                    <div className="text-center text-sm text-gray-500 border border-[#30363d] p-4 rounded-md">
                       No ID card image uploaded.
                     </div>
                   )}
@@ -170,7 +172,7 @@ const UserVerification = () => {
                   disabled={loading}
                   className={`flex items-center gap-2 px-4 py-2 rounded-md transition text-white ${
                     loading
-                      ? "bg-gray-400 cursor-not-allowed"
+                      ? "bg-gray-600 cursor-not-allowed"
                       : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
@@ -185,7 +187,7 @@ const UserVerification = () => {
                 </button>
                 <button
                   onClick={() => setSelectedUser(null)}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-md"
+                  className="flex items-center gap-2 px-4 py-2 bg-red-800 hover:bg-red-700 text-white rounded-md"
                 >
                   <XCircle size={18} />
                   Close

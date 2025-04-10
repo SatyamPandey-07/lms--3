@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 // Layout Components
 import Navbar from "./pages/Navbar";
 import Footer from "./pages/Footer";
+import AdminLayout from "./pages/admin/AdminLayout";
 
 // Auth Pages
 import Login from "./pages/login";
@@ -23,7 +24,7 @@ import Dashboard from "./pages/Dashboard";
 import Books from "./pages/Books";
 import BookUser from "./pages/BookUser";
 
-// Admin Dashboard
+// Admin Dashboard Pages
 import AdminDashboard from "./pages/AdminDashboard";
 import BookAdmin from "./pages/BookAdmin";
 import IssueAdmin from "./pages/IsssueAdmin";
@@ -51,13 +52,15 @@ function App() {
           <Route path="/books" element={<Books />} />
           <Route path="/book-user" element={<BookUser />} />
 
-          {/* Admin Dashboard Routes */}
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/books" element={<BookAdmin />} />
-          <Route path="/admin/issue-requests" element={<IssueAdmin />} />
-          <Route path="/admin/users" element={<UserList />} />
-          <Route path="/admin/user-verification" element={<UserVerification />} />
-          <Route path="/admin/close-issue" element={<CloseIssue />} />
+          {/* Admin Routes with Sidebar Layout */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="books" element={<BookAdmin />} />
+            <Route path="issue-requests" element={<IssueAdmin />} />
+            <Route path="users" element={<UserList />} />
+            <Route path="user-verification" element={<UserVerification />} />
+            <Route path="close-issue" element={<CloseIssue />} />
+          </Route>
 
           {/* Catch-all NotFound Route */}
           <Route path="*" element={<NotFound />} />
