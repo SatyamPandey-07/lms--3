@@ -35,6 +35,9 @@ import CloseIssue from "./pages/CloseIssue";
 // Error Page
 import NotFound from "./pages/NotFound";
 
+// Secure Routing
+import PrivateRoute from "./components/PrivateRoute";
+
 function App() {
   return (
     <>
@@ -47,22 +50,26 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/admin-login" element={<AdminKey />} />
 
-          {/* User Dashboard Routes */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/books" element={<Books />} />
-          <Route path="/book-user" element={<BookUser />} />
-
-          {/* Admin Routes with Sidebar Layout */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="books" element={<BookAdmin />} />
-            <Route path="issue-requests" element={<IssueAdmin />} />
-            <Route path="users" element={<UserList />} />
-            <Route path="user-verification" element={<UserVerification />} />
-            <Route path="close-issue" element={<CloseIssue />} />
+          {/* User Protected Routes */}
+          <Route element={<PrivateRoute role="user" />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/books" element={<Books />} />
+            <Route path="/book-user" element={<BookUser />} />
           </Route>
 
-          {/* Catch-all NotFound Route */}
+          {/* Admin Protected Routes */}
+          <Route element={<PrivateRoute role="admin" />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="books" element={<BookAdmin />} />
+              <Route path="issue-requests" element={<IssueAdmin />} />
+              <Route path="users" element={<UserList />} />
+              <Route path="user-verification" element={<UserVerification />} />
+              <Route path="close-issue" element={<CloseIssue />} />
+            </Route>
+          </Route>
+
+          {/* Catch-all Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
